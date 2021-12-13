@@ -8,9 +8,9 @@ const db = require("./config/mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocal = require("./config/passport-local-strategy");
+const passportJWT = require("./config/passport-jwt-strategy");
 const MongoStore = require("connect-mongo")(session);
 const sassMiddleware = require("node-sass-middleware");
-
 app.use(
   sassMiddleware({
     src: "./assets/scss",
@@ -21,20 +21,15 @@ app.use(
   })
 );
 app.use(express.urlencoded());
-
 app.use(cookieParser());
-
 app.use(express.static("./assets"));
-
 app.use(expressLayouts);
 // extract style and scripts from sub pages into the layout
 app.set("layout extractStyles", true);
 app.set("layout extractScripts", true);
-
 // set up the view engine
 app.set("view engine", "ejs");
 app.set("views", "./views");
-
 // mongo store is used to store the session cookie in the db
 app.use(
   session({
@@ -57,19 +52,13 @@ app.use(
     ),
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 app.use(passport.setAuthenticatedUser); // used in posts form !
-
-// use express router
-app.use("/", require("./routes"));
-
+app.use("/", require("./routes")); // use express router
 app.listen(port, function (err) {
   if (err) {
     console.log(`Error in running the server: ${err}`);
   }
-
   console.log(`Server is running on port: ${port}`);
 });
